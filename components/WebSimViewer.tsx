@@ -1,90 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 
 export const WebSimViewer: React.FC = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Using the requested URL.
   const TARGET_URL = "https://interactive-cooking-game--frog.on.websim.com/";
-
-  // Persistent Polling: Aggressively check for and remove the target element.
-  // NOTE: This will only work if the browser allows Cross-Origin access.
-  // If blocked by CORS, the Visual Mask defined in the JSX will handle the "removal" visually.
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-
-    const POLLING_DURATION = 60000; // Run for 60 seconds after load/mount
-    const POLLING_INTERVAL = 50; // Check very frequently (50ms)
-    let startTime = Date.now();
-    
-    const intervalId = setInterval(() => {
-      // Stop polling after duration
-      if (Date.now() - startTime > POLLING_DURATION) {
-        clearInterval(intervalId);
-        return;
-      }
-
-      try {
-        // Attempt to access internal document. 
-        const doc = iframe.contentDocument || iframe.contentWindow?.document;
-        
-        if (doc) {
-          // --- Strategy 1: Targeted ID Removal ---
-          const specificLogo = doc.getElementById('websim-logo-container');
-          if (specificLogo) specificLogo.remove();
-
-          const closeBtn = doc.getElementById('websim-close-button');
-          if (closeBtn) {
-             (closeBtn as HTMLElement).click(); 
-             closeBtn.remove();
-          }
-
-          // --- Strategy 2: Shadow DOM Host Removal ---
-          if (doc.body) {
-            const children = Array.from(doc.body.children) as HTMLElement[];
-            for (const child of children) {
-              // Check if the element hosts a shadow root
-              if (child.shadowRoot) {
-                child.remove();
-              }
-              
-              // Also check for specific wrapper classes often used by overlays
-              if (child.classList.contains('websim-sidebar') || 
-                  child.id === 'websim-ui' || 
-                  child.tagName.toLowerCase().includes('websim')) {
-                child.remove();
-              }
-            }
-          }
-
-          // --- Strategy 3: CSS Injection ---
-          if (!doc.getElementById('viewer-cleanup-styles')) {
-            const style = doc.createElement('style');
-            style.id = 'viewer-cleanup-styles';
-            style.textContent = `
-              #websim-logo-container, 
-              #websim-bar, 
-              .websim-sidebar,
-              [id*="websim"] { 
-                display: none !important; 
-                opacity: 0 !important; 
-                pointer-events: none !important; 
-                visibility: hidden !important;
-                z-index: -9999 !important;
-              }
-            `;
-            doc.head?.appendChild(style);
-          }
-        }
-      } catch (e) {
-        // Silent catch: CORS blocked access.
-      }
-    }, POLLING_INTERVAL);
-
-    return () => clearInterval(intervalId);
-  }, [refreshKey]);
 
   const handleReload = () => {
     setRefreshKey(prev => prev + 1);
@@ -117,7 +38,6 @@ export const WebSimViewer: React.FC = () => {
 
       <iframe
         key={refreshKey}
-        ref={iframeRef}
         src={TARGET_URL}
         title="Interactive Cooking Game"
         className="w-full h-full border-none block bg-black"

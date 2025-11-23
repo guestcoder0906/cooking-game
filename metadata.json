@@ -1,0 +1,5 @@
+{
+  "name": "Iframe",
+  "description": "A full-screen immersive viewer for Word Merge 2048.",
+  "requestFramePermissions": []
+}

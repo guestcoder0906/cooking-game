@@ -26,13 +26,13 @@ export const WebSimViewer: React.FC = () => {
 
       {/* VISUAL MASK: Bottom Right 
           Since browsers block script access to cross-origin iframes (CORS),
-          we place a black element over the area where the logo appears to hide it.
+          we place a colored element over the area where the logo appears to hide it.
           Pinning to 0,0 (bottom right) to cover the extreme corner edges.
           Using rounded-tl-3xl gives it a smooth interior curve while keeping the corner square.
       */}
       <div 
-        className="absolute bottom-0 right-0 z-50 bg-black rounded-tl-3xl pointer-events-auto"
-        style={{ width: '160px', height: '50px' }}
+        className="absolute bottom-0 right-0 z-50 rounded-tl-3xl pointer-events-auto"
+        style={{ width: '160px', height: '50px', backgroundColor: '#D2B48C' }}
         aria-hidden="true"
       />
 

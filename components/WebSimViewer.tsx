@@ -32,7 +32,7 @@ export const WebSimViewer: React.FC = () => {
       */}
       <div 
         className="absolute bottom-0 right-0 z-50 bg-black rounded-tl-3xl pointer-events-auto"
-        style={{ width: '160px', height: '60px' }}
+        style={{ width: '160px', height: '50px' }}
         aria-hidden="true"
       />
 
